@@ -2,7 +2,7 @@ import type { TabData } from "./api";
 import type { KasukuApp } from "./apps";
 
 function formatValue(value: string | null) {
-  if (value == null || value === "") return "—";
+  if (value == null || value === "") return "-";
   const numeric = Number(value);
   if (!Number.isNaN(numeric) && /^-?\d+(\.\d+)?$/.test(value)) {
     return numeric.toLocaleString();
@@ -41,20 +41,25 @@ export function AppWorkspace({
       {error ? <p className="workspace-banner">{error}</p> : null}
       {data?.warning ? <p className="workspace-banner">{data.warning}</p> : null}
 
+      <p className="workspace-overview">KPI overview for this tab. The full Metabase dashboard is hidden for now.</p>
+
       <div className="kpi-grid">
         {loading && !data ? (
           <article className="kpi-card">
-            <span>Loading warehouse cards…</span>
+            <span>Loading warehouse cards</span>
             <strong>…</strong>
           </article>
         ) : (
-          cards.map((card) => (
-            <article key={card.name} className="kpi-card">
-              <span>{card.name}</span>
-              <strong>{formatValue(card.value)}</strong>
-              <em>{card.source}</em>
-            </article>
-          ))
+          cards.map((card, index) => {
+            const formatted = formatValue(card.value);
+            return (
+              <article key={`${card.name}-${index}`} className="kpi-card">
+                <span>{card.name}</span>
+                <strong className={formatted.length > 18 ? "kpi-long" : undefined}>{formatted}</strong>
+                <em>{card.source}</em>
+              </article>
+            );
+          })
         )}
       </div>
 
@@ -65,19 +70,11 @@ export function AppWorkspace({
             {Object.entries(data.params).map(([key, values]) => (
               <div key={key}>
                 <dt>{key}</dt>
-                <dd>{values.join(", ") || "—"}</dd>
+                <dd>{values.join(", ") || "-"}</dd>
               </div>
             ))}
           </dl>
         </details>
-      ) : null}
-
-      {data?.embed_url ? (
-        <iframe
-          className="embed-frame"
-          title={`${app.title} warehouse view`}
-          src={data.embed_url}
-        />
       ) : null}
     </section>
   );

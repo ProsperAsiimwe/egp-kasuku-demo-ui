@@ -263,6 +263,12 @@ textarea {
   font-size: 0.82rem;
 }
 
+.workspace-overview {
+  margin: 0 0 12px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -290,6 +296,13 @@ textarea {
 
 .kpi-card strong {
   font-size: 1.45rem;
+  word-break: break-word;
+}
+
+.kpi-card strong.kpi-long {
+  font-size: 0.95rem;
+  line-height: 1.3;
+  font-weight: 650;
 }
 
 .kpi-card em {
@@ -322,14 +335,6 @@ textarea {
 .embed-params dd {
   margin: 2px 0 0;
   word-break: break-all;
-}
-
-.embed-frame {
-  width: 100%;
-  min-height: 640px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
 }
 
 .acmis-footer {

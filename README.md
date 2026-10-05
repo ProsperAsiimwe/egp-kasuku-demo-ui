@@ -1,6 +1,6 @@
 # EGP 2.0 KASUKU demo UI
 
-React + Vite shell that mimics ACMIS **MY APPLICATIONS** tiles and the terp-ui Kasuku bubble. It talks only to `egp-mlops-microservice`. The tiles are the EGP Reports landing tabs (System Administration is hidden). Opening a tile loads that tab's warehouse cards through a Metabase static-embed GET, then reveals the Kasuku FAB.
+React + Vite shell that mimics ACMIS **MY APPLICATIONS** tiles and the terp-ui Kasuku bubble. It talks only to `egp-mlops-microservice`. The tiles are the EGP Reports landing tabs (System Administration is hidden). Opening a tile shows a **KPI overview** for that tab (scalar cards from Metabase, plus the tab catalog). The full Home dashboard iframe is not shown. The Kasuku FAB appears after the app opens.
 
 | | |
 | --- | --- |
@@ -30,7 +30,7 @@ Open [http://127.0.0.1:5173](http://127.0.0.1:5173).
 
 1. `POST /egp-mlops-microservice/v1/demo/session` issues a local demo JWT
 2. `GET /egp-mlops-microservice/v1/demo/apps` lists the 13 landing tabs
-3. Click a tile → `GET /egp-mlops-microservice/v1/demo/apps/{slug}/data` mints the embed JWT server-side and GETs that tab's cards
+3. Click a tile → `GET /egp-mlops-microservice/v1/demo/apps/{slug}/data` mints the embed JWT server-side and GETs that tab's KPI scalars (no dashboard iframe)
 4. The Kasuku logo bubble appears only inside an opened app and chats at `/copilot/{slug}/chat`
 
 The health pill is green only when `/health/ready` is ok (Postgres, Redis, and the LLM gateway).
