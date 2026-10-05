@@ -1,0 +1,22 @@
+# Dependencies and build
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Secrets and local env (keep .env.example)
+.env
+.env.*
+!.env.example
+
+# Vite / npm local overrides
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
