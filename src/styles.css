@@ -392,8 +392,7 @@ textarea {
 
 .eval-steps span,
 .check-list span,
-.score-row em,
-.rank-board span {
+.score-row em {
   color: var(--muted);
   font-size: 0.82rem;
   line-height: 1.4;
@@ -680,8 +679,7 @@ fieldset:disabled .eval-submit {
   font-size: 1.3rem;
 }
 
-.research-card ul,
-.rank-board ol {
+.research-card ul {
   margin: 8px 0 0;
   padding-left: 18px;
 }
@@ -691,10 +689,154 @@ fieldset:disabled .eval-submit {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  flex-wrap: wrap;
 }
 
-.rank-board-head h3 {
-  margin: 0;
+.board-tabs {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.board-tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 0;
+  border-right: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.board-tabs button:last-child {
+  border-right: 0;
+}
+
+.board-tabs button span {
+  min-width: 1.4rem;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.board-tabs button.active {
+  background: var(--primary-deep);
+  color: #fff;
+}
+
+.board-tabs button.active span {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.board-scroll {
+  overflow-x: auto;
+  margin-top: 8px;
+}
+
+.board-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 520px;
+}
+
+.board-table th {
+  text-align: left;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 700;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.board-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+.board-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.board-table tr.is-best td {
+  background: #f0fdf4;
+}
+
+.board-table-rejected {
+  min-width: 640px;
+}
+
+.rank-badge {
+  display: inline-grid;
+  place-items: center;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--primary-deep);
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+tr.is-best .rank-badge {
+  background: var(--primary-deep);
+  color: #fff;
+}
+
+.board-name {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--primary-deep);
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+
+.board-name:disabled {
+  cursor: wait;
+}
+
+.best-tag {
+  display: block;
+  margin-top: 2px;
+  color: var(--ok);
+  font-style: normal;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.stage-chip {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 3px 8px;
+  background: #fef2f2;
+  color: var(--down);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.board-table .reason {
+  color: var(--ink);
+  line-height: 1.45;
+  max-width: 36rem;
+}
+
+.board-empty {
+  margin: 12px 0 0;
 }
 
 .rank-clear {
@@ -757,6 +899,33 @@ fieldset:disabled .eval-submit {
 
 .source-card a {
   font-weight: 650;
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.red-flag {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin-top: 3px;
+  color: var(--down);
+}
+
+.source-card.flagged {
+  border-color: #f0c4c4;
+  box-shadow: inset 3px 0 0 var(--down);
+}
+
+.source-wrongdoing {
+  color: var(--ink);
+  font-size: 0.85rem;
+}
+
+.wrongdoing-word {
+  color: var(--down);
+  background: transparent;
+  font-weight: 700;
 }
 
 .source-card p {

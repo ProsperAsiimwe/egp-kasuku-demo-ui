@@ -194,6 +194,7 @@ export type BidResearch = {
     published_at?: string | null;
     opened?: boolean;
     note?: string;
+    wrongdoing?: string[];
   }[];
   legitimacy: string;
   summary: string;
@@ -251,16 +252,42 @@ export async function listBidBoard(session: DemoSession, app: KasukuApp): Promis
   return (body.board || []) as BidSubmission[];
 }
 
-export async function clearBidBoard(session: DemoSession, app: KasukuApp): Promise<BidSubmission[]> {
-  const response = await fetch(`${API}/copilot/evaluation/bids`, {
+export async function clearBidBoard(
+  session: DemoSession,
+  app: KasukuApp,
+  scope: "recommended" | "rejected" = "recommended",
+): Promise<BidSubmission[]> {
+  const response = await fetch(`${API}/copilot/evaluation/bids?scope=${scope}`, {
     method: "DELETE",
     headers: staffHeaders(session, app),
   });
   const body = await parseJson(response);
   if (!response.ok || body.server?.status === false) {
-    throw new Error(staffError(body, "Could not clear the best evaluated bidders."));
+    throw new Error(
+      staffError(
+        body,
+        scope === "rejected"
+          ? "Could not clear the rejected bidders."
+          : "Could not clear the best evaluated bidders.",
+      ),
+    );
   }
   return (body.board || []) as BidSubmission[];
+}
+
+export async function getBid(
+  session: DemoSession,
+  app: KasukuApp,
+  submissionId: number,
+): Promise<BidSubmission> {
+  const response = await fetch(`${API}/copilot/evaluation/bids/${submissionId}`, {
+    headers: staffHeaders(session, app),
+  });
+  const body = await parseJson(response);
+  if (!response.ok || body.server?.status === false) {
+    throw new Error(staffError(body, "Could not open that evaluation."));
+  }
+  return body.submission as BidSubmission;
 }
 
 export async function submitBid(

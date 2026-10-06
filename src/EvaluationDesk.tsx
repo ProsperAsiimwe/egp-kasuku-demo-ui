@@ -3,6 +3,7 @@ import {
   listBidBoard,
   listBidSamples,
   clearBidBoard,
+  getBid,
   submitBid,
   type BidResearch,
   type BidSample,
@@ -75,22 +76,69 @@ function outcomeLabel(outcome: string): string {
   return outcome;
 }
 
+function RedFlag() {
+  return (
+    <svg className="red-flag" viewBox="0 0 16 16" aria-hidden="true">
+      <path fill="currentColor" d="M2.2 1.2h1.3V14.8H2.2z" />
+      <path fill="currentColor" d="M3.5 1.6h9.2L10.1 5.2l2.6 3.6H3.5z" />
+    </svg>
+  );
+}
+
+function MarkedText({ text, words }: { text: string; words: string[] }) {
+  if (!words.length) return <>{text}</>;
+  const pattern = new RegExp(
+    `(${[...words]
+      .sort((left, right) => right.length - left.length)
+      .map((word) => word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+      .join("|")})`,
+    "gi",
+  );
+  return (
+    <>
+      {text.split(pattern).map((part, index) =>
+        words.some((word) => word.toLowerCase() === part.toLowerCase()) ? (
+          <mark key={`${part}-${index}`} className="wrongdoing-word">
+            {part}
+          </mark>
+        ) : (
+          <span key={`${part}-${index}`}>{part}</span>
+        ),
+      )}
+    </>
+  );
+}
+
 function SourceCards({ pages }: { pages: ResearchPage[] }) {
   return (
     <>
-      {pages.map((page) =>
-        page.url ? (
-          <article key={page.url} className="source-card">
+      {pages.map((page) => {
+        const words = page.wrongdoing ?? [];
+        return page.url ? (
+          <article
+            key={page.url}
+            className={words.length ? "source-card flagged" : "source-card"}
+          >
             <p className="source-when">{formatPublished(page.published_at)}</p>
             <p className="source-kind">{sourceLabel(page.source)}</p>
             <a href={page.url} target="_blank" rel="noreferrer">
-              {page.title || page.url}
+              {words.length ? <RedFlag /> : null}
+              <MarkedText text={page.title || page.url} words={words} />
             </a>
-            {page.excerpt ? <p>{page.excerpt}</p> : null}
+            {words.length ? (
+              <p className="source-wrongdoing">
+                Wrongdoing: <MarkedText text={words.join(", ")} words={words} />
+              </p>
+            ) : null}
+            {page.excerpt ? (
+              <p>
+                <MarkedText text={page.excerpt} words={words} />
+              </p>
+            ) : null}
             {page.note ? <p className="source-note">{page.note}</p> : null}
           </article>
-        ) : null,
-      )}
+        ) : null;
+      })}
     </>
   );
 }
@@ -221,6 +269,23 @@ function verdictLabel(verdict: string) {
   return verdict;
 }
 
+function scoreText(value: number | null | undefined): string {
+  if (value == null) return "—";
+  return `${Math.round(value)}%`;
+}
+
+function stopLabel(status: string): string {
+  if (status === "eliminated_preliminary") return "Preliminary";
+  if (status === "eliminated_identity") return "Company name";
+  if (status === "eliminated_integrity") return "Company check";
+  if (status === "eliminated_technical") return "Technical";
+  if (status === "eliminated_financial") return "Financial";
+  if (status === "error") return "Could not finish";
+  return status.replaceAll("_", " ");
+}
+
+type BoardTab = "best" | "rejected";
+
 export function EvaluationDesk({
   app,
   session,
@@ -243,6 +308,8 @@ export function EvaluationDesk({
   const [error, setError] = useState<string | null>(null);
   const [bootError, setBootError] = useState<string | null>(null);
   const [clearing, setClearing] = useState(false);
+  const [boardTab, setBoardTab] = useState<BoardTab>("best");
+  const [openingId, setOpeningId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!session) return;
@@ -331,12 +398,12 @@ export function EvaluationDesk({
     }
   }
 
-  async function onClearBoard() {
+  async function onClearBoard(scope: "recommended" | "rejected") {
     if (!session || clearing) return;
     setClearing(true);
     setError(null);
     try {
-      const nextBoard = await clearBidBoard(session, app);
+      const nextBoard = await clearBidBoard(session, app, scope);
       setBoard(nextBoard);
       setResult((current) =>
         current && nextBoard.some((row) => row.id === current.id) ? current : null,
@@ -345,10 +412,27 @@ export function EvaluationDesk({
       setError(
         err instanceof Error
           ? err.message
-          : "Could not clear the best evaluated bidders.",
+          : scope === "rejected"
+            ? "Could not clear the rejected bidders."
+            : "Could not clear the best evaluated bidders.",
       );
     } finally {
       setClearing(false);
+    }
+  }
+
+  async function openSubmission(submissionId: number) {
+    if (!session || openingId != null) return;
+    setOpeningId(submissionId);
+    setError(null);
+    try {
+      setResult(await getBid(session, app, submissionId));
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not open that evaluation.",
+      );
+    } finally {
+      setOpeningId(null);
     }
   }
 
@@ -357,6 +441,7 @@ export function EvaluationDesk({
   const technical = checks.find((item) => item.stage === "technical");
   const financial = checks.find((item) => item.stage === "financial");
   const ranked = board.filter((row) => row.rank != null);
+  const rejected = board.filter((row) => row.verdict !== "recommended");
 
   return (
     <section className="eval-desk">
@@ -452,7 +537,9 @@ export function EvaluationDesk({
           <p className="eval-note">
             Kasuku fails a certificate when the upload is blank or does not
             follow that certificate’s template. The words “shall submit” are not
-            proof the bidder attached it. Works bids may leave NITA-U empty.
+            proof the bidder attached it. The company name you type has to
+            appear in every uploaded document and on the company website. A
+            mismatch rejects the submission. Works bids may leave NITA-U empty.
           </p>
           <button type="submit" className="eval-submit">
             {loading
@@ -515,37 +602,140 @@ export function EvaluationDesk({
         </article>
       ) : null}
 
-      {ranked.length ? (
+      {board.length ? (
         <div className="rank-board">
           <div className="rank-board-head">
-            <h3>Best evaluated bidders</h3>
+            <div className="board-tabs" role="tablist" aria-label="Bidder lists">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={boardTab === "best"}
+                className={boardTab === "best" ? "active" : ""}
+                onClick={() => setBoardTab("best")}
+              >
+                Best evaluated
+                <span>{ranked.length}</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={boardTab === "rejected"}
+                className={boardTab === "rejected" ? "active" : ""}
+                onClick={() => setBoardTab("rejected")}
+              >
+                Rejected
+                <span>{rejected.length}</span>
+              </button>
+            </div>
             <button
               type="button"
               className="rank-clear"
-              onClick={onClearBoard}
-              disabled={clearing || loading}
+              onClick={() =>
+                onClearBoard(boardTab === "best" ? "recommended" : "rejected")
+              }
+              disabled={
+                clearing ||
+                loading ||
+                (boardTab === "best" ? ranked.length === 0 : rejected.length === 0)
+              }
             >
               {clearing ? "Clearing…" : "Clear list"}
             </button>
           </div>
-          <p>
-            Only bidders who passed every gate. Rank is combined technical and
-            financial score.
-          </p>
-          <ol>
-            {ranked.map((row) => (
-              <li key={row.id}>
-                <strong>
-                  {row.rank}. {row.company_name}
-                  {row.best_evaluated ? " · best evaluated" : ""}
-                </strong>
-                <span>
-                  Technical {row.technical_score}% · Financial{" "}
-                  {row.financial_score}%
-                </span>
-              </li>
-            ))}
-          </ol>
+          {boardTab === "best" ? (
+            <div role="tabpanel">
+              <p>
+                Bidders who passed every gate. Rank is the combined technical
+                and financial score. Clear list removes only this table.
+              </p>
+              {ranked.length ? (
+                <div className="board-scroll">
+                  <table className="board-table">
+                    <thead>
+                      <tr>
+                        <th>Rank</th>
+                        <th>Bidder</th>
+                        <th>Technical</th>
+                        <th>Financial</th>
+                        <th>Combined</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ranked.map((row) => (
+                        <tr key={row.id} className={row.best_evaluated ? "is-best" : ""}>
+                          <td>
+                            <span className="rank-badge">{row.rank}</span>
+                          </td>
+                          <td>
+                            <button
+                              type="button"
+                              className="board-name"
+                              onClick={() => openSubmission(row.id)}
+                              disabled={openingId != null}
+                            >
+                              {row.company_name}
+                            </button>
+                            {row.best_evaluated ? (
+                              <em className="best-tag">Best evaluated</em>
+                            ) : null}
+                          </td>
+                          <td>{scoreText(row.technical_score)}</td>
+                          <td>{scoreText(row.financial_score)}</td>
+                          <td>{row.combined_score == null ? "—" : Math.round(row.combined_score)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="board-empty">No bidder has cleared every gate.</p>
+              )}
+            </div>
+          ) : (
+            <div role="tabpanel">
+              <p>
+                Bidders who were stopped, and the reason. Clear list removes
+                only this table.
+              </p>
+              {rejected.length ? (
+                <div className="board-scroll">
+                  <table className="board-table board-table-rejected">
+                    <thead>
+                      <tr>
+                        <th>Bidder</th>
+                        <th>Stopped at</th>
+                        <th>Why</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rejected.map((row) => (
+                        <tr key={row.id}>
+                          <td>
+                            <button
+                              type="button"
+                              className="board-name"
+                              onClick={() => openSubmission(row.id)}
+                              disabled={openingId != null}
+                            >
+                              {row.company_name}
+                            </button>
+                          </td>
+                          <td>
+                            <span className="stage-chip">{stopLabel(row.status)}</span>
+                          </td>
+                          <td className="reason">
+                            {row.summary || row.error || "No reason was recorded."}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <p className="board-empty">No rejected bidders on this list.</p>
+              )}
+            </div>
+          )}
         </div>
       ) : null}
     </section>
