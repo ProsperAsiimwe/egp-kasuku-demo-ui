@@ -10,6 +10,7 @@ import {
 import type { KasukuApp } from "./apps";
 import { ApplicationsHome } from "./ApplicationsHome";
 import { AppWorkspace } from "./AppWorkspace";
+import { EvaluationDesk } from "./EvaluationDesk";
 import { KasukuFab } from "./KasukuFab";
 
 const NAME_KEY = "egp-kasuku-demo-name";
@@ -147,6 +148,9 @@ export function App() {
               <span>/</span>
               <strong>{activeApp.title}</strong>
             </nav>
+            {activeApp.code === "EVALUATION" ? (
+              <EvaluationDesk app={activeApp} session={session} />
+            ) : null}
             <AppWorkspace app={activeApp} data={tabData} loading={loadingData} error={dataError} />
           </>
         ) : (

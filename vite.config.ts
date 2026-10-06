@@ -16,6 +16,8 @@ export default defineConfig(({ mode }) => {
         "/egp-mlops-microservice": {
           target,
           changeOrigin: true,
+          timeout: 300_000,
+          proxyTimeout: 300_000,
         },
         "/health": {
           target,

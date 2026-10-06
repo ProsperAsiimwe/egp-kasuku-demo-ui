@@ -347,10 +347,450 @@ textarea {
   font-size: 0.78rem;
 }
 
+.eval-desk {
+  margin-bottom: 28px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.eval-head h2 {
+  margin: 0 0 8px;
+}
+
+.eval-head p:last-child,
+.eval-note,
+.rank-board p,
+.research-card p {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.eval-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.eval-steps li,
+.eval-result,
+.research-card,
+.rank-board {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+.eval-steps li {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.eval-steps span,
+.check-list span,
+.score-row em,
+.rank-board span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.eval-form fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.eval-form legend {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.bid-file input[type="file"] {
+  padding: 8px 0;
+}
+
+.eval-against {
+  margin: 0 0 8px;
+  color: var(--muted, #4b5563);
+}
+
+.eval-progress {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 18px;
+  align-items: center;
+  margin: 16px 0;
+  padding: 18px 20px;
+  background: linear-gradient(135deg, #f3fbfe, #ffffff 55%);
+  border: 1px solid #c5e4f2;
+  border-radius: 16px;
+}
+
+.eval-ring {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.eval-ring svg {
+  width: 140px;
+  height: 140px;
+  transform: rotate(-90deg);
+}
+
+.eval-ring-track,
+.eval-ring-value {
+  fill: none;
+  stroke-width: 10;
+}
+
+.eval-ring-track {
+  stroke: #d7eef6;
+}
+
+.eval-ring-value {
+  stroke: var(--primary-deep);
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.2s linear;
+}
+
+.eval-ring strong {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  color: var(--primary-deep);
+}
+
+.eval-progress-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.kasuku-thinking {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  text-transform: none;
+}
+
+.kasuku-thinking::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(47, 151, 193, 0.55) 0%,
+    rgba(244, 176, 186, 0.28) 46%,
+    transparent 72%
+  );
+  animation: kasuku-think-glow 2.2s ease-in-out infinite;
+}
+
+.kasuku-thinking-img {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  transform-origin: 50% 60%;
+  animation: kasuku-think 2.2s ease-in-out infinite;
+}
+
+@keyframes kasuku-think {
+  0%,
+  100% {
+    transform: scale(0.86);
+    opacity: 0.72;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes kasuku-think-glow {
+  0%,
+  100% {
+    transform: scale(0.72);
+    opacity: 0.35;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kasuku-thinking::before,
+  .kasuku-thinking-img {
+    animation: none;
+  }
+}
+
+.eval-progress h3 {
+  margin: 0 0 6px;
+}
+
+.eval-progress span {
+  color: var(--muted);
+}
+
+.template-pick {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.template-pick select {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--panel);
+}
+
+.eval-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.eval-fields label,
+.eval-fields input {
+  display: block;
+  width: 100%;
+}
+
+.eval-fields input,
+.eval-submit {
+  margin-top: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+
+.eval-submit {
+  margin-top: 12px;
+  background: var(--primary-deep);
+  color: white;
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.eval-submit:disabled,
+fieldset:disabled .eval-submit {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.eval-result,
+.research-card,
+.rank-board {
+  margin-top: 14px;
+  padding: 14px;
+}
+
+.eval-result.recommended {
+  border-color: #86efac;
+}
+
+.eval-result.eliminated,
+.eval-result.error {
+  border-color: #fecaca;
+}
+
+.eval-verdict {
+  margin: 0;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--primary-deep);
+}
+
+.check-list {
+  list-style: none;
+  margin: 12px 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.check-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.check-list em {
+  font-style: normal;
+  text-transform: uppercase;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
+.check-list li.pass em {
+  color: var(--ok);
+}
+
+.check-list li.fail em {
+  color: var(--down);
+}
+
+.check-list span {
+  grid-column: 1 / -1;
+}
+
+.score-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.score-row p {
+  margin: 0;
+}
+
+.score-row span,
+.score-row em {
+  display: block;
+}
+
+.score-row strong {
+  font-size: 1.3rem;
+}
+
+.research-card ul,
+.rank-board ol {
+  margin: 8px 0 0;
+  padding-left: 18px;
+}
+
+.rank-board-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.rank-board-head h3 {
+  margin: 0;
+}
+
+.rank-clear {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.rank-clear:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.research-card a {
+  color: var(--primary-deep);
+}
+
+.research-decision {
+  white-space: pre-wrap;
+  line-height: 1.5;
+  margin: 8px 0 4px;
+}
+
+.source-list h4 {
+  margin: 18px 0 8px;
+  font-size: 0.95rem;
+}
+
+.source-list > p {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.source-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin: 0 0 10px;
+}
+
+.source-when {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--primary-deep);
+}
+
+.source-kind {
+  margin: 2px 0 4px;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.source-card a {
+  font-weight: 650;
+}
+
+.source-card p {
+  margin: 6px 0 0;
+  color: var(--ink, #1c2430);
+  line-height: 1.45;
+}
+
+.source-note {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.source-aside .source-card {
+  background: transparent;
+}
+
+.research-card li em {
+  display: block;
+  color: var(--primary);
+  font-size: 0.75rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
 @media (max-width: 1100px) {
   .app-grid,
   .kpi-grid,
-  .embed-params dl {
+  .embed-params dl,
+  .eval-steps,
+  .eval-fields,
+  .score-row {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -370,7 +810,11 @@ textarea {
 
   .app-grid,
   .kpi-grid,
-  .embed-params dl {
+  .embed-params dl,
+  .eval-steps,
+  .eval-fields,
+  .score-row,
+  .eval-progress {
     grid-template-columns: 1fr;
   }
 }
