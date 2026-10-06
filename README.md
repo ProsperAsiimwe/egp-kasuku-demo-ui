@@ -1,6 +1,6 @@
 # EGP 2.0 KASUKU demo UI
 
-React + Vite shell that mimics ACMIS **MY APPLICATIONS** tiles and the terp-ui Kasuku bubble. It talks only to `egp-mlops-microservice`. The tiles are the EGP Reports landing tabs (System Administration is hidden). Opening a tile shows a **KPI overview** for that tab (scalar cards from Metabase, plus the tab catalog). The full Home dashboard iframe is not shown. The Kasuku FAB appears after the app opens.
+ Kasuku bubble talks only to `egp-mlops-microservice`. The tiles are the EGP Reports landing tabs (System Administration is hidden). Opening a tile shows a **KPI overview** for that tab (scalar cards from Metabase, plus the tab catalog). The full Home dashboard iframe is not shown. The Kasuku FAB appears after the app opens.
 
 | | |
 | --- | --- |
